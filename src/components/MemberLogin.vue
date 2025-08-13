@@ -8,34 +8,21 @@
                     </v-card-title>
                     <v-card-text>
                         <v-form>
-                            <v-text-field
-                                label="email"
-                                v-model="email"
-                            >
+                            <v-text-field label="email" v-model="email">
                             </v-text-field>
-                            <v-text-field
-                                label="패스워드"
-                                v-model="password"
-                                type="password"
-                            >
+                            <v-text-field label="패스워드" v-model="password" type="password">
                             </v-text-field>
                             <v-btn type="button" color="primary" block @click="memberLogin()">로그인</v-btn>
                         </v-form>
                         <br>
                         <v-row>
                             <v-col cols="6" class="d-flex justify-center">
-                                <img
-                                    src="@/assets/google_login.png"
-                                    style="max-height:40px; width:auto;"
-                                    @click="googleServerLogin()"
-                                />
+                                <img src="@/assets/google_login.png" style="max-height:40px; width:auto;"
+                                    @click="googleServerLogin()" />
                             </v-col>
                             <v-col cols="6" class="d-flex justify-center">
-                                <img
-                                    src="@/assets/kakao_login.png"
-                                    style="max-height:40px; width:auto;"
-                                    @click="kakaoLogin()"
-                                />
+                                <img src="@/assets/kakao_login.png" style="max-height:40px; width:auto;"
+                                    @click="kakaoLogin()" />
                             </v-col>
                         </v-row>
                     </v-card-text>
@@ -48,10 +35,10 @@
 <script>
 import axios from 'axios';
 
-export default{
-    data(){
-        return{
-            email : "",
+export default {
+    data() {
+        return {
+            email: "",
             password: "",
             googleUrl: "https://accounts.google.com/o/oauth2/auth",
             googleClientId: "880702551086-0gqbfu844015mnoqhnid66o31k82qeq0.apps.googleusercontent.com",
@@ -63,27 +50,39 @@ export default{
             kakaoRedirectUrl: "http://localhost:3000/oauth/kakao/redirect",
         }
     },
-    methods:{
-        async memberLogin(){
+    methods: {
+        async memberLogin() {
             const loginData = {
                 email: this.email,
                 password: this.password
             }
             const response = await axios.post("http://localhost:8080/member/doLogin", loginData);
             const token = response.data.token;
-            localStorage.setItem("token", token);
-            window.location.href = "/";
+            const result = response.data.token.substring(0, 8);
+            if (result == "(create)") {
+                this.$router.push({
+                    name: 'GoogleCreate',
+                    params: {
+                        token: token
+                    }
+                });
+            } else {
+                localStorage.setItem("token", token);
+                window.location.href = "/";
+            }
         },
-        googleLogin(){
+        async googleLogin() {
+            // 서버에 기존회원인지 확인 : yes or no
+
             const auth_uri = `${this.googleUrl}?client_id=${this.googleClientId}&redirect_uri=${this.googleRedirectUrl}&response_type=code&scope=${this.googleScope}`;
             window.location.href = auth_uri;
         },
-        kakaoLogin(){
+        kakaoLogin() {
             const auth_uri = `${this.kakaoUrl}?client_id=${this.kakaoClientId}&redirect_uri=${this.kakaoRedirectUrl}&response_type=code`;
             window.location.href = auth_uri;
         },
 
-        googleServerLogin(){
+        googleServerLogin() {
             window.location.href = "http://localhost:8080/oauth2/authorization/google";
         }
     }

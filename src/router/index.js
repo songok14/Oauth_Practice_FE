@@ -1,3 +1,4 @@
+import GoogleCreate from "@/components/GoogleCreate.vue";
 import GoogleRedirect from "@/components/GoogleRedirect.vue";
 import KakaoRedirect from "@/components/KakaoRedirect.vue";
 import MemberCreate from "@/components/MemberCreate.vue";
@@ -21,6 +22,12 @@ const routes = [
     {
         path: "/oauth/kakao/redirect",
         component: KakaoRedirect
+    },
+    {
+        path: "/member/google/create",
+        name: "GoogleCreate",
+        component: GoogleCreate,
+        props: true,
     }
 ]
 const router = createRouter(
